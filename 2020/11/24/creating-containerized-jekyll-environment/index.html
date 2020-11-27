@@ -6,7 +6,7 @@
 
   <title>
     
-      Every . Monday
+      Creating a Containerized Jekyll Environment &middot; Every . Monday
     
   </title>
 
@@ -17,15 +17,18 @@
 
   <!-- Begin Jekyll SEO tag v2.6.1 -->
 <meta name="generator" content="Jekyll v4.1.1" />
-<meta property="og:title" content="Home" />
+<meta property="og:title" content="Creating a Containerized Jekyll Environment" />
 <meta name="author" content="Mark Otto" />
 <meta property="og:locale" content="en_US" />
-<link rel="canonical" href="http://0.0.0.0:4000/page2/" />
-<meta property="og:url" content="http://0.0.0.0:4000/page2/" />
+<meta name="description" content="I used to create and maintan blogs on wordpress(I still have my old one hosted on wordpress https://kreatures.wordpress.com/, I have migrated this to my previous site hosted on a webhosting company however due to cost of maintaining my webhosting and domain it got terminated) and have not maintain it for a long time, there is nothing wrong with using wordpress. It is easy, convinient and very manageable, If you have a development based wordpress setup, i’m pretty sure that you are familiar that wordpress relies on a few services such as Database(mysql/mariadb etc), php and more. While it is not really hard to setup all this since you got LAMP/WAMP and just need a few tweaking of adding Php components and more. In the end it is up to you on what choose based on your comfortability." />
+<meta property="og:description" content="I used to create and maintan blogs on wordpress(I still have my old one hosted on wordpress https://kreatures.wordpress.com/, I have migrated this to my previous site hosted on a webhosting company however due to cost of maintaining my webhosting and domain it got terminated) and have not maintain it for a long time, there is nothing wrong with using wordpress. It is easy, convinient and very manageable, If you have a development based wordpress setup, i’m pretty sure that you are familiar that wordpress relies on a few services such as Database(mysql/mariadb etc), php and more. While it is not really hard to setup all this since you got LAMP/WAMP and just need a few tweaking of adding Php components and more. In the end it is up to you on what choose based on your comfortability." />
+<link rel="canonical" href="http://0.0.0.0:4000/2020/11/24/creating-containerized-jekyll-environment/" />
+<meta property="og:url" content="http://0.0.0.0:4000/2020/11/24/creating-containerized-jekyll-environment/" />
 <meta property="og:site_name" content="Every . Monday" />
-<link rel="prev" href="http://0.0.0.0:4000/" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-11-24T00:00:00-06:00" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"Mark Otto"},"headline":"Home","@type":"WebPage","url":"http://0.0.0.0:4000/page2/","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"Mark Otto"},"headline":"Creating a Containerized Jekyll Environment","dateModified":"2020-11-24T00:00:00-06:00","datePublished":"2020-11-24T00:00:00-06:00","description":"I used to create and maintan blogs on wordpress(I still have my old one hosted on wordpress https://kreatures.wordpress.com/, I have migrated this to my previous site hosted on a webhosting company however due to cost of maintaining my webhosting and domain it got terminated) and have not maintain it for a long time, there is nothing wrong with using wordpress. It is easy, convinient and very manageable, If you have a development based wordpress setup, i’m pretty sure that you are familiar that wordpress relies on a few services such as Database(mysql/mariadb etc), php and more. While it is not really hard to setup all this since you got LAMP/WAMP and just need a few tweaking of adding Php components and more. In the end it is up to you on what choose based on your comfortability.","mainEntityOfPage":{"@type":"WebPage","@id":"http://0.0.0.0:4000/2020/11/24/creating-containerized-jekyll-environment/"},"@type":"BlogPosting","url":"http://0.0.0.0:4000/2020/11/24/creating-containerized-jekyll-environment/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -48,18 +51,10 @@
       </header>
 
       <main>
-        <div class="posts">
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2020/11/24/creating-containerized-jekyll-environment/">
-        Creating a Containerized Jekyll Environment
-      </a>
-    </h1>
-
-    <time datetime="2020-11-24T00:00:00-06:00" class="post-date">24 Nov 2020</time>
-
-    <p>I used to create and maintan blogs on wordpress(I still have my old one hosted on wordpress https://kreatures.wordpress.com/, I have migrated this to my previous site hosted on a webhosting company however due to cost of maintaining my webhosting and domain it got terminated) and have not maintain it for a long time, there is nothing wrong with using wordpress. It is easy, convinient and very manageable, If you have a development based wordpress setup, i’m pretty sure that you are familiar that wordpress relies on a few services such as Database(mysql/mariadb etc), php and more. While it is not really hard to setup all this since you got LAMP/WAMP and just need a few tweaking of adding Php components and more. In the end it is up to you on what choose based on your comfortability.</p>
+        <article class="post">
+  <h1 class="post-title">Creating a Containerized Jekyll Environment</h1>
+  <time datetime="2020-11-24T00:00:00-06:00" class="post-date">24 Nov 2020</time>
+  <p>I used to create and maintan blogs on wordpress(I still have my old one hosted on wordpress https://kreatures.wordpress.com/, I have migrated this to my previous site hosted on a webhosting company however due to cost of maintaining my webhosting and domain it got terminated) and have not maintain it for a long time, there is nothing wrong with using wordpress. It is easy, convinient and very manageable, If you have a development based wordpress setup, i’m pretty sure that you are familiar that wordpress relies on a few services such as Database(mysql/mariadb etc), php and more. While it is not really hard to setup all this since you got LAMP/WAMP and just need a few tweaking of adding Php components and more. In the end it is up to you on what choose based on your comfortability.</p>
 
 <p>I started exploring Jekyll and hosted it in github, if you are reading this. This is hosted in github</p>
 
@@ -138,18 +133,23 @@ g. it - This is the docker paramter that allocates a pseudo TTY and will prompt 
   jekyll/jekyll:3.8 <br />
   jekyll build</p>
 
-  </article>
-  
-</div>
+</article>
 
-<div class="pagination">
-  
-    <span class="pagination-item older">Older</span>
-  
-  
-    <a class="pagination-item newer" href="/">Newer</a>
-  
-</div>
+
+<aside class="related">
+  <h3>Related posts</h3>
+  <ul class="related-posts">
+    
+      <li>
+        <a href="/2020/11/26/virtualBox-on-fedora33/">
+          Debugging VirtualBox Issues on Fedora 33
+          <small><time datetime="2020-11-26T00:00:00-06:00">26 Nov 2020</time></small>
+        </a>
+      </li>
+    
+  </ul>
+</aside>
+
 
       </main>
 
