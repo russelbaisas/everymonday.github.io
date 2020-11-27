@@ -4,7 +4,7 @@
  <title>Every . Monday</title>
  <link href="/atom.xml" rel="self"/>
  <link href="http://0.0.0.0:4000/"/>
- <updated>2020-11-26T21:19:05-06:00</updated>
+ <updated>2020-11-26T21:28:42-06:00</updated>
  <id>http://0.0.0.0:4000</id>
  <author>
    <name>Mark Otto</name>
@@ -447,12 +447,6 @@ d. -p 4000:4000 - Will be the port number to use
 e. jekyll/jekyll:3.8 - This is the jekyll that we will be using
 f. jekyll serve - Will be the command to trigger to start serving the blog under port 3000
 g. it - This is the docker paramter that allocates a pseudo TTY and will prompt an open STDIN input&lt;/p&gt;
-
-&lt;p&gt;docker run –rm -it &lt;br /&gt;
-  –volume=”$PWD:/srv/jekyll” &lt;br /&gt;
-  –volume=”$PWD/vendor/bundle:/usr/local/bundle” &lt;br /&gt;
-  jekyll/jekyll:3.8 &lt;br /&gt;
-  jekyll build&lt;/p&gt;
 </content>
  </entry>
  
