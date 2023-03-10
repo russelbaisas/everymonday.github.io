@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark-poole">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      Every . Monday
+    
+  </title>
+
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+  <link rel="alternate" type="application/atom+xml" title="Every . Monday" href="/atom.xml">
+
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Home" />
+<meta name="author" content="Mark Otto" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="https://getpoole.com/" />
+<meta property="og:url" content="https://getpoole.com/" />
+<meta property="og:site_name" content="Every . Monday" />
+<link rel="next" href="https://getpoole.com/page2" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Mark Otto"},"headline":"Home","@type":"WebSite","url":"https://getpoole.com/","name":"Every . Monday","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+
+  <body>
+    <div class="container content">
+      <header class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Every . Monday</a>
+
+          <nav class="nav">
+            
+            <small><a href="/archive">Blog</a></small>
+            
+            <small><a href="/about">About</a></small>
+            
+          </nav>
+        </h3>
+      </header>
+
+      <main>
+        <div class="posts">
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2023/03/10/kubernetes-the-hard-way/">
+        Kubernetes the hard way
+      </a>
+    </h1>
+
+    <time datetime="2023-03-10T00:00:00+11:00" class="post-date">10 Mar 2023</time>
+
+    <p>Following this youtube tutorial</p>
+
+<p>https://www.youtube.com/watch?v=2bVK-e-GuYI</p>
+
+<p>First create the lxc haproxy CONTAINER</p>
+
+<ul>
+  <li>Error rightaway</li>
+</ul>
+
+<p>[root@localhost container-tuts]# lxc launch images:fedora/31 haproxy
+WARNING: cgroup v2 is not fully supported yet, proceeding with partial confinement
+If this is your first time running LXD on this machine, you should also run: lxd init</p>
+
+<p>Creating haproxy
+Error: Failed instance creation: No storage pool found. Please create a new storage pool</p>
+
+<p>Answer</p>
+
+<p>[root@localhost container-tuts]# lxd init
+WARNING: cgroup v2 is not fully supported yet, proceeding with partial confinement
+Would you like to use LXD clustering? (yes/no) [default=no]:
+Do you want to configure a new storage pool? (yes/no) [default=yes]: yes
+Name of the new storage pool [default=default]:
+Name of the storage backend to use (dir, lvm, ceph, btrfs) [default=btrfs]:
+Would you like to create a new btrfs subvolume under /var/snap/lxd/common/lxd? (yes/no) [default=yes]:
+Would you like to connect to a MAAS server? (yes/no) [default=no]:
+Would you like to create a new local network bridge? (yes/no) [default=yes]:
+What should the new bridge be called? [default=lxdbr0]:
+What IPv4 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]:
+What IPv6 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]:
+Would you like LXD to be available over the network? (yes/no) [default=no]:
+Would you like stale cached images to be updated automatically? (yes/no) [default=yes]
+Would you like a YAML “lxd init” preseed to be printed? (yes/no) [default=no]:</p>
+
+<p>Next is controller 0,1,2</p>
+
+<p>lxc launch images:fedora/31 controller-0 –profile k8s     # applying restriction to use only 2 CPU and 2 GB RAM</p>
+
+<p>Issue : not getting IP Address.</p>
+
+<p>Answer: disable firewalld</p>
+
+<p>Create the remaining</p>
+
+<p>Below will be the output</p>
+
+<p>[root@localhost ~]# lxc launch images:fedora/31 worker-2 –profile k8s
+Creating worker-2
+Starting worker-2
+[root@localhost ~]# lxc list
++————–+———+———————–+——+———–+———–+
+|     NAME     |  STATE  |         IPV4          | IPV6 |   TYPE    | SNAPSHOTS |
++————–+———+———————–+——+———–+———–+
+| controller-0 | RUNNING | 10.240.130.126 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| controller-1 | RUNNING | 10.240.130.43 (eth0)  |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| controller-2 | RUNNING | 10.240.130.218 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| haproxy      | RUNNING | 10.240.130.174 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| worker-0     | RUNNING | 10.240.130.84 (eth0)  |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| worker-1     | RUNNING | 10.240.130.207 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| worker-2     | RUNNING | 10.240.130.8 (eth0)   |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+</p>
+
+<p>Login to HAPRoxy server</p>
+
+<p>[root@localhost ~]# lxc exec haproxy bash
+[root@haproxy ~]#</p>
+
+<p>[root@haproxy ~]# systemctl enable haproxy
+Created symlink /etc/systemd/system/multi-user.target.wants/haproxy.service → /usr/lib/systemd/system/haproxy.service.
+[root@haproxy ~]# systemctl start haproxy
+[root@haproxy ~]# systemctl status haproxy
+● haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; enabled; vendor preset: disabled)
+   Active: active (running) since Mon 2020-12-14 08:16:58 UTC; 5s ago
+  Process: 193 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q (code=exited, status=0/SUCCESS)
+ Main PID: 194 (haproxy)
+      CPU: 16ms
+   CGroup: /system.slice/haproxy.service
+           ├─194 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+           └─195 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid</p>
+
+<p>Dec 14 08:16:58 haproxy haproxy[194]: [WARNING] 348/081658 (194) : parsing [/etc/haproxy/haproxy.cfg:73] : backend ‘k8s’ : ‘option tcplog’ directive is ignored in backends.
+Dec 14 08:16:58 haproxy haproxy[194]: [WARNING] 348/081658 (194) : parsing [/etc/haproxy/haproxy.cfg:49] : ‘option httplog’ not usable with frontend ‘k8s’ (needs ‘mode http’). Falling back to ‘option tcplog’.
+Dec 14 08:16:58 haproxy haproxy[194]: [WARNING] 348/081658 (194) : config : ‘option forwardfor’ ignored for frontend ‘k8s’ as it requires HTTP mode.
+Dec 14 08:16:58 haproxy haproxy[194]: [WARNING] 348/081658 (194) : config : ‘option forwardfor’ ignored for backend ‘k8s’ as it requires HTTP mode.
+Dec 14 08:16:58 haproxy haproxy[194]: [NOTICE] 348/081658 (194) : New worker #1 (195) forked
+Dec 14 08:16:58 haproxy systemd[1]: Started HAProxy Load Balancer.
+Dec 14 08:16:58 haproxy haproxy[194]: [WARNING] 348/081658 (195) : Server k8s/controller-0 is DOWN, reason: Layer4 connection problem, info: “Connection refused at initial connection step of tcp-check”, check duration: 0ms. 2
+active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+Dec 14 08:16:59 haproxy haproxy[194]: [WARNING] 348/081659 (195) : Server k8s/controller-1 is DOWN, reason: Layer4 connection problem, info: “Connection refused at initial connection step of tcp-check”, check duration: 0ms. 1
+active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+Dec 14 08:16:59 haproxy haproxy[194]: [WARNING] 348/081659 (195) : Server k8s/controller-2 is DOWN, reason: Layer4 connection problem, info: “Connection refused at initial connection step of tcp-check”, check duration: 0ms. 0
+active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+Dec 14 08:16:59 haproxy haproxy[194]: [ALERT] 348/081659 (195) : backend ‘k8s’ has no server available!
+[root@haproxy ~]# netstat -an | grep -i 6443
+tcp        0      0 10.240.130.174:6443     0.0.0.0:*               LISTEN</p>
+
+<p>In /etc/haproxy/haproxy.configure</p>
+
+<p>add
+frontend k8s
+  bind 10.240.130.174:6443
+  mode tcp
+  default_backend k8s</p>
+
+<p>backend k8s
+  balance roundrobin
+  mode tcp
+  option tcplog
+  option tcp-check
+  server controller-0 10.240.130.126:6443 check
+  server controller-1 10.240.130.43:6443 check
+  server controller-2 10.240.130.218:6443 check</p>
+
+<p>Then go to below to follow and download cfssl and cfssljason and kubectl</p>
+
+<p>https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/02-client-tools.md</p>
+
+<p>output</p>
+
+<p>[root@localhost ~]# wget -q –show-progress –https-only –timestamping \</p>
+<blockquote>
+  <p>https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl <br />
+  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson
+cfssl                                                    100%[================================================================================================================================&gt;]  14.15M  1.09MB/s    in 15s
+cfssljson                                                100%[================================================================================================================================&gt;]   9.05M  1.08MB/s    in 13s
+[root@localhost ~]# chmod +x cfssl cfssljson
+[root@localhost ~]# sudo mv cfssl cfssljson /usr/local/bin/
+[root@localhost ~]# cfssl version
+Version: 1.4.1
+Runtime: go1.12.12</p>
+</blockquote>
+
+<p>downloading kubectl</p>
+
+<p>[root@localhost ~]# wget https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl
+–2020-12-14 19:22:20–  https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl
+Resolving storage.googleapis.com (storage.googleapis.com)… 216.58.199.48, 216.58.200.112, 216.58.203.112, …
+Connecting to storage.googleapis.com (storage.googleapis.com)|216.58.199.48|:443… connected.
+HTTP request sent, awaiting response… 200 OK
+Length: 44036096 (42M) [application/octet-stream]
+Saving to: ‘kubectl’</p>
+
+<p>kubectl                                                  100%[================================================================================================================================&gt;]  42.00M  1.07MB/s    in 52s</p>
+
+<p>2020-12-14 19:23:12 (830 KB/s) - ‘kubectl’ saved [44036096/44036096]</p>
+
+<p>[root@localhost ~]# sudo mv kubectl /usr/local/bin/
+[root@localhost ~]# chmod +x /usr/local/bin/kubectl</p>
+
+<p>[root@localhost ~]# kubectl version –client
+Client Version: version.Info{Major:”1”, Minor:”18”, GitVersion:”v1.18.6”, GitCommit:”dff82dc0de47299ab66c83c626e08b245ab19037”, GitTreeState:”clean”, BuildDate:”2020-07-15T16:58:53Z”, GoVersion:”go1.13.9”, Compiler:”gc”, Platform:”linux/amd64”}</p>
+
+<p>Next is creating the certificate authority to generate the TLS certificate</p>
+
+<p>https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md</p>
+
+<p>Copy below to create the CA Certificate</p>
+
+<p>{</p>
+
+<p>cat &gt; ca-config.json «EOF
+{
+  “signing”: {
+    “default”: {
+      “expiry”: “8760h”
+    },
+    “profiles”: {
+      “kubernetes”: {
+        “usages”: [“signing”, “key encipherment”, “server auth”, “client auth”],
+        “expiry”: “8760h”
+      }
+    }
+  }
+}
+EOF</p>
+
+<p>cat &gt; ca-csr.json «EOF
+{
+  “CN”: “Kubernetes”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “Kubernetes”,
+      “OU”: “CA”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>cfssl gencert -initca ca-csr.json</td>
+      <td>cfssljson -bare ca</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>}</p>
+
+<p>[root@localhost TLScerts]# ls -lrta
+total 20
+drwxr-xr-x. 1 root root   46 Dec 14 19:27 ..
+-rw-r–r–. 1 root root  232 Dec 14 19:27 ca-config.json
+-rw-r–r–. 1 root root  211 Dec 14 19:27 ca-csr.json
+-rw-r–r–. 1 root root 1318 Dec 14 19:27 ca.pem
+-rw——-. 1 root root 1675 Dec 14 19:27 ca-key.pem
+-rw-r–r–. 1 root root 1005 Dec 14 19:27 ca.csr
+drwxr-xr-x. 1 root root   94 Dec 14 19:27 .</p>
+
+<p>Now to create the client and server Certificate</p>
+
+<p>creating the admin Certificate
+[root@localhost TLScerts]# {</p>
+<blockquote>
+
+  <p>cat &gt; admin-csr.json «EOF
+{
+  “CN”: “admin”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “system:masters”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -profile=kubernetes <br />
+  admin-csr.json | cfssljson -bare admin</p>
+
+  <p>}
+^[[D2020/12/14 19:29:38 [INFO] generate received request
+2020/12/14 19:29:38 [INFO] received CSR
+2020/12/14 19:29:38 [INFO] generating key: rsa-2048
+2020/12/14 19:29:38 [INFO] encoded CSR
+2020/12/14 19:29:38 [INFO] signed certificate with serial number 485448210446573079384885397273270040866263471671
+2020/12/14 19:29:38 [WARNING] This certificate lacks a “hosts” field. This makes it unsuitable for
+websites. For more information see the Baseline Requirements for the Issuance and Management
+of Publicly-Trusted Certificates, v.1.1.6, from the CA/Browser Forum (https://cabforum.org);
+specifically, section 10.2.3 (“Information Requirements”).
+[root@localhost TLScerts]# ls -lrta
+total 36
+drwxr-xr-x. 1 root root   46 Dec 14 19:27 ..
+-rw-r–r–. 1 root root  232 Dec 14 19:27 ca-config.json
+-rw-r–r–. 1 root root  211 Dec 14 19:27 ca-csr.json
+-rw-r–r–. 1 root root 1318 Dec 14 19:27 ca.pem
+-rw——-. 1 root root 1675 Dec 14 19:27 ca-key.pem
+-rw-r–r–. 1 root root 1005 Dec 14 19:27 ca.csr
+drwxr-xr-x. 1 root root   28 Dec 14 19:29 admin
+-rw-r–r–. 1 root root  231 Dec 14 19:29 admin-csr.json
+-rw-r–r–. 1 root root 1428 Dec 14 19:29 admin.pem
+-rw——-. 1 root root 1679 Dec 14 19:29 admin-key.pem
+-rw-r–r–. 1 root root 1033 Dec 14 19:29 admin.csr
+drwxr-xr-x. 1 root root  194 Dec 14 19:29 .</p>
+</blockquote>
+
+<p>Now the kubelet client Certificates
+[root@localhost TLScerts]# for instance in worker-0 worker-1 worker-2; do</p>
+<blockquote>
+  <p>cat &gt; ${instance}-csr.json «EOF
+{
+  “CN”: “system:node:${instance}”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “system:nodes”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>EXTERNAL_IP=<code class="language-plaintext highlighter-rouge">lxc info $instance | grep eth0 | head -1 | awk '{print $3}'</code></p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -hostname=${instance},${EXTERNAL_IP} <br />
+  -profile=kubernetes <br />
+  ${instance}-csr.json | cfssljson -bare ${instance}
+done
+2020/12/14 19:41:05 [INFO] generate received request
+2020/12/14 19:41:05 [INFO] received CSR
+2020/12/14 19:41:05 [INFO] generating key: rsa-2048
+2020/12/14 19:41:05 [INFO] encoded CSR
+2020/12/14 19:41:05 [INFO] signed certificate with serial number 256444174978263350501357920782572001449539874782
+2020/12/14 19:41:05 [INFO] generate received request
+2020/12/14 19:41:05 [INFO] received CSR
+2020/12/14 19:41:05 [INFO] generating key: rsa-2048
+2020/12/14 19:41:05 [INFO] encoded CSR
+2020/12/14 19:41:05 [INFO] signed certificate with serial number 589301474577049321303729395180185696998420578011
+2020/12/14 19:41:05 [INFO] generate received request
+2020/12/14 19:41:05 [INFO] received CSR
+2020/12/14 19:41:05 [INFO] generating key: rsa-2048
+2020/12/14 19:41:05 [INFO] encoded CSR
+2020/12/14 19:41:05 [INFO] signed certificate with serial number 345552983611108608813886544739494147617808343673</p>
+</blockquote>
+
+<p>Next is controller manager certificate</p>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+
+  <p>cat &gt; kube-controller-manager-csr.json «EOF
+{
+  “CN”: “system:kube-controller-manager”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “system:kube-controller-manager”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -profile=kubernetes <br />
+  kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager</p>
+
+  <p>}
+2020/12/14 19:42:13 [INFO] generate received request
+2020/12/14 19:42:13 [INFO] received CSR
+2020/12/14 19:42:13 [INFO] generating key: rsa-2048
+2020/12/14 19:42:14 [INFO] encoded CSR
+2020/12/14 19:42:14 [INFO] signed certificate with serial number 55293725755037143315542427780464137181239745852
+2020/12/14 19:42:14 [WARNING] This certificate lacks a “hosts” field. This makes it unsuitable for
+websites. For more information see the Baseline Requirements for the Issuance and Management
+of Publicly-Trusted Certificates, v.1.1.6, from the CA/Browser Forum (https://cabforum.org);
+specifically, section 10.2.3 (“Information Requirements”).
+[root@localhost TLScerts]# ls -l
+total 100
+drwxr-xr-x. 1 root root   28 Dec 14 19:29 admin
+-rw-r–r–. 1 root root 1033 Dec 14 19:29 admin.csr
+-rw-r–r–. 1 root root  231 Dec 14 19:29 admin-csr.json
+-rw——-. 1 root root 1679 Dec 14 19:29 admin-key.pem
+-rw-r–r–. 1 root root 1428 Dec 14 19:29 admin.pem
+-rw-r–r–. 1 root root  232 Dec 14 19:27 ca-config.json
+-rw-r–r–. 1 root root 1005 Dec 14 19:27 ca.csr
+-rw-r–r–. 1 root root  211 Dec 14 19:27 ca-csr.json
+-rw——-. 1 root root 1675 Dec 14 19:27 ca-key.pem
+-rw-r–r–. 1 root root 1318 Dec 14 19:27 ca.pem
+-rw-r–r–. 1 root root 1090 Dec 14 19:42 kube-controller-manager.csr
+-rw-r–r–. 1 root root  272 Dec 14 19:42 kube-controller-manager-csr.json
+-rw——-. 1 root root 1675 Dec 14 19:42 kube-controller-manager-key.pem
+-rw-r–r–. 1 root root 1484 Dec 14 19:42 kube-controller-manager.pem
+-rw-r–r–. 1 root root 1110 Dec 14 19:41 worker-0.csr
+-rw-r–r–. 1 root root  244 Dec 14 19:41 worker-0-csr.json
+-rw——-. 1 root root 1675 Dec 14 19:41 worker-0-key.pem
+-rw-r–r–. 1 root root 1484 Dec 14 19:41 worker-0.pem
+-rw-r–r–. 1 root root 1110 Dec 14 19:41 worker-1.csr
+-rw-r–r–. 1 root root  244 Dec 14 19:41 worker-1-csr.json
+-rw——-. 1 root root 1679 Dec 14 19:41 worker-1-key.pem
+-rw-r–r–. 1 root root 1484 Dec 14 19:41 worker-1.pem
+-rw-r–r–. 1 root root 1110 Dec 14 19:41 worker-2.csr
+-rw-r–r–. 1 root root  244 Dec 14 19:41 worker-2-csr.json
+-rw——-. 1 root root 1679 Dec 14 19:41 worker-2-key.pem
+-rw-r–r–. 1 root root 1484 Dec 14 19:41 worker-2.pem</p>
+</blockquote>
+
+<p>Kube proxy certificate</p>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+
+  <p>cat &gt; kube-proxy-csr.json «EOF
+{
+  “CN”: “system:kube-proxy”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “system:node-proxier”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -profile=kubernetes <br />
+  kube-proxy-csr.json | cfssljson -bare kube-proxy</p>
+
+  <p>}
+2020/12/14 19:44:06 [INFO] generate received request
+2020/12/14 19:44:06 [INFO] received CSR
+2020/12/14 19:44:06 [INFO] generating key: rsa-2048
+2020/12/14 19:44:06 [INFO] encoded CSR
+2020/12/14 19:44:06 [INFO] signed certificate with serial number 69447575981683117612605771568699427969584598346
+2020/12/14 19:44:06 [WARNING] This certificate lacks a “hosts” field. This makes it unsuitable for
+websites. For more information see the Baseline Requirements for the Issuance and Management
+of Publicly-Trusted Certificates, v.1.1.6, from the CA/Browser Forum (https://cabforum.org);
+specifically, section 10.2.3 (“Information Requirements”).
+[root@localhost TLScerts]# ls -lrta <em>proxy</em>
+-rw-r–r–. 1 root root  248 Dec 14 19:44 kube-proxy-csr.json
+-rw-r–r–. 1 root root 1452 Dec 14 19:44 kube-proxy.pem
+-rw——-. 1 root root 1679 Dec 14 19:44 kube-proxy-key.pem
+-rw-r–r–. 1 root root 1058 Dec 14 19:44 kube-proxy.csr</p>
+</blockquote>
+
+<p>kube scheduler</p>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+
+  <p>cat &gt; kube-scheduler-csr.json «EOF
+{
+  “CN”: “system:kube-scheduler”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “system:kube-scheduler”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -profile=kubernetes <br />
+  kube-scheduler-csr.json | cfssljson -bare kube-scheduler</p>
+
+  <p>}
+2020/12/14 19:44:47 [INFO] generate received request
+2020/12/14 19:44:47 [INFO] received CSR
+2020/12/14 19:44:47 [INFO] generating key: rsa-2048
+2020/12/14 19:44:47 [INFO] encoded CSR
+2020/12/14 19:44:47 [INFO] signed certificate with serial number 413548228123008706248249755643535932039534636644
+2020/12/14 19:44:47 [WARNING] This certificate lacks a “hosts” field. This makes it unsuitable for
+websites. For more information see the Baseline Requirements for the Issuance and Management
+of Publicly-Trusted Certificates, v.1.1.6, from the CA/Browser Forum (https://cabforum.org);
+specifically, section 10.2.3 (“Information Requirements”).
+[root@localhost TLScerts]# ls -lrta <em>sched</em>
+-rw-r–r–. 1 root root  254 Dec 14 19:44 kube-scheduler-csr.json
+-rw-r–r–. 1 root root 1460 Dec 14 19:44 kube-scheduler.pem
+-rw——-. 1 root root 1675 Dec 14 19:44 kube-scheduler-key.pem
+-rw-r–r–. 1 root root 1066 Dec 14 19:44 kube-scheduler.csr</p>
+</blockquote>
+
+<p>API Server
+[root@localhost TLScerts]# {</p>
+<blockquote>
+
+  <p>KUBERNETES_PUBLIC_ADDRESS=10.240.130.174</p>
+
+  <p>KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local</p>
+
+  <p>cat &gt; kubernetes-csr.json «EOF
+{
+  “CN”: “kubernetes”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “Kubernetes”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -hostname=10.240.130.126,10.240.130.43,10.240.130.218,${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,${KUBERNETES_HOSTNAMES} <br />
+  -profile=kubernetes <br />
+  kubernetes-csr.json | cfssljson -bare kubernetes</p>
+
+  <p>}
+2020/12/14 19:52:42 [INFO] generate received request
+2020/12/14 19:52:42 [INFO] received CSR
+2020/12/14 19:52:42 [INFO] generating key: rsa-2048
+2020/12/14 19:52:42 [INFO] encoded CSR
+2020/12/14 19:52:42 [INFO] signed certificate with serial number 317295034175162161971754483973390152134519496782</p>
+</blockquote>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+
+  <p>cat &gt; service-account-csr.json «EOF
+{
+  “CN”: “service-accounts”,
+  “key”: {
+    “algo”: “rsa”,
+    “size”: 2048
+  },
+  “names”: [
+    {
+      “C”: “US”,
+      “L”: “Portland”,
+      “O”: “Kubernetes”,
+      “OU”: “Kubernetes The Hard Way”,
+      “ST”: “Oregon”
+    }
+  ]
+}
+EOF</p>
+
+  <p>cfssl gencert <br />
+  -ca=ca.pem <br />
+  -ca-key=ca-key.pem <br />
+  -config=ca-config.json <br />
+  -profile=kubernetes <br />
+  service-account-csr.json | cfssljson -bare service-account</p>
+
+  <p>}
+2020/12/14 19:53:25 [INFO] generate received request
+2020/12/14 19:53:25 [INFO] received CSR
+2020/12/14 19:53:25 [INFO] generating key: rsa-2048
+2020/12/14 19:53:25 [INFO] encoded CSR
+2020/12/14 19:53:25 [INFO] signed certificate with serial number 125394360752048305272615329195920980397827494857
+2020/12/14 19:53:25 [WARNING] This certificate lacks a “hosts” field. This makes it unsuitable for
+websites. For more information see the Baseline Requirements for the Issuance and Management
+of Publicly-Trusted Certificates, v.1.1.6, from the CA/Browser Forum (https://cabforum.org);
+specifically, section 10.2.3 (“Information Requirements”).
+[root@localhost TLScerts]# ls -lrta
+total 164
+drwxr-xr-x. 1 root root   46 Dec 14 19:27 ..
+-rw-r–r–. 1 root root  232 Dec 14 19:27 ca-config.json
+-rw-r–r–. 1 root root  211 Dec 14 19:27 ca-csr.json
+-rw-r–r–. 1 root root 1318 Dec 14 19:27 ca.pem
+-rw——-. 1 root root 1675 Dec 14 19:27 ca-key.pem
+-rw-r–r–. 1 root root 1005 Dec 14 19:27 ca.csr
+drwxr-xr-x. 1 root root   28 Dec 14 19:29 admin
+-rw-r–r–. 1 root root  231 Dec 14 19:29 admin-csr.json
+-rw-r–r–. 1 root root 1428 Dec 14 19:29 admin.pem
+-rw——-. 1 root root 1679 Dec 14 19:29 admin-key.pem
+-rw-r–r–. 1 root root 1033 Dec 14 19:29 admin.csr
+-rw-r–r–. 1 root root  244 Dec 14 19:41 worker-0-csr.json
+-rw-r–r–. 1 root root 1484 Dec 14 19:41 worker-0.pem
+-rw——-. 1 root root 1675 Dec 14 19:41 worker-0-key.pem
+-rw-r–r–. 1 root root 1110 Dec 14 19:41 worker-0.csr
+-rw-r–r–. 1 root root  244 Dec 14 19:41 worker-1-csr.json
+-rw-r–r–. 1 root root 1484 Dec 14 19:41 worker-1.pem
+-rw——-. 1 root root 1679 Dec 14 19:41 worker-1-key.pem
+-rw-r–r–. 1 root root 1110 Dec 14 19:41 worker-1.csr
+-rw-r–r–. 1 root root  244 Dec 14 19:41 worker-2-csr.json
+-rw-r–r–. 1 root root 1484 Dec 14 19:41 worker-2.pem
+-rw——-. 1 root root 1679 Dec 14 19:41 worker-2-key.pem
+-rw-r–r–. 1 root root 1110 Dec 14 19:41 worker-2.csr
+-rw-r–r–. 1 root root  272 Dec 14 19:42 kube-controller-manager-csr.json
+-rw-r–r–. 1 root root 1484 Dec 14 19:42 kube-controller-manager.pem
+-rw——-. 1 root root 1675 Dec 14 19:42 kube-controller-manager-key.pem
+-rw-r–r–. 1 root root 1090 Dec 14 19:42 kube-controller-manager.csr
+-rw-r–r–. 1 root root  248 Dec 14 19:44 kube-proxy-csr.json
+-rw-r–r–. 1 root root 1452 Dec 14 19:44 kube-proxy.pem
+-rw——-. 1 root root 1679 Dec 14 19:44 kube-proxy-key.pem
+-rw-r–r–. 1 root root 1058 Dec 14 19:44 kube-proxy.csr
+-rw-r–r–. 1 root root  254 Dec 14 19:44 kube-scheduler-csr.json
+-rw-r–r–. 1 root root 1460 Dec 14 19:44 kube-scheduler.pem
+-rw——-. 1 root root 1675 Dec 14 19:44 kube-scheduler-key.pem
+-rw-r–r–. 1 root root 1066 Dec 14 19:44 kube-scheduler.csr
+-rw-r–r–. 1 root root  232 Dec 14 19:52 kubernetes-csr.json
+-rw-r–r–. 1 root root 1655 Dec 14 19:52 kubernetes.pem
+-rw——-. 1 root root 1679 Dec 14 19:52 kubernetes-key.pem
+-rw-r–r–. 1 root root 1281 Dec 14 19:52 kubernetes.csr
+-rw-r–r–. 1 root root  238 Dec 14 19:53 service-account-csr.json
+-rw-r–r–. 1 root root 1440 Dec 14 19:53 service-account.pem
+-rw——-. 1 root root 1679 Dec 14 19:53 service-account-key.pem
+-rw-r–r–. 1 root root 1041 Dec 14 19:53 service-account.csr
+drwxr-xr-x. 1 root root 1362 Dec 14 19:53 .</p>
+</blockquote>
+
+<p>Copy the certificates to the worker and compute</p>
+
+<p>[root@localhost TLScerts]# for instance in worker-0 worker-1 worker-2; do   lxc file push –debug –verbose ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/root/; done
+Error: The remote “worker-0” doesn’t exist
+Error: The remote “worker-1” doesn’t exist
+Error: The remote “worker-2” doesn’t exist</p>
+
+<p>[root@localhost TLScerts]# lxc list
+Error: The remote isn’t a private LXD server
+[root@localhost TLScerts]# lxc remote set-default local
+[root@localhost TLScerts]# lxc list
++————–+———+———————–+——+———–+———–+
+|     NAME     |  STATE  |         IPV4          | IPV6 |   TYPE    | SNAPSHOTS |
++————–+———+———————–+——+———–+———–+
+| controller-0 | RUNNING | 10.240.130.126 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| controller-1 | RUNNING | 10.240.130.43 (eth0)  |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| controller-2 | RUNNING | 10.240.130.218 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| haproxy      | RUNNING | 10.240.130.174 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| worker-0     | RUNNING | 10.240.130.84 (eth0)  |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| worker-1     | RUNNING | 10.240.130.207 (eth0) |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+
+| worker-2     | RUNNING | 10.240.130.8 (eth0)   |      | CONTAINER | 0         |
++————–+———+———————–+——+———–+———–+</p>
+
+<p>[root@localhost TLScerts]# for instance in worker-0 worker-1 worker-2; do lxc file push  ca.pem ${instance}-key.pem ${instance}.pem ${instance}/root/; done
+[root@localhost TLScerts]# lxc exec worker-0 ls
+ca.pem  worker-0-key.pem  worker-0.pem</p>
+
+<p>[root@localhost TLScerts]# for instance in controller-0 controller-1 controller-2; do</p>
+<blockquote>
+  <p>lxc file push ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem <br />
+    service-account-key.pem service-account.pem ${instance}/root/
+done
+[root@localhost TLScerts]# lxc exec controller-0 ls
+ca-key.pem  ca.pem  kubernetes-key.pem  kubernetes.pem  service-account-key.pem  service-account.pem</p>
+</blockquote>
+
+<p>Generating the Kubernetes Configuration</p>
+
+<p>KUBERNETES_PUBLIC_ADDRESS=10.240.130.174</p>
+
+<p>Generating the kubelet kubernetes config files</p>
+
+<p>[root@localhost TLScerts]# for instance in worker-0 worker-1 worker-2; do</p>
+<blockquote>
+  <p>kubectl config set-cluster kubernetes-the-hard-way <br />
+    –certificate-authority=ca.pem <br />
+    –embed-certs=true <br />
+    –server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 <br />
+    –kubeconfig=${instance}.kubeconfig</p>
+
+  <p>kubectl config set-credentials system:node:${instance} <br />
+    –client-certificate=${instance}.pem <br />
+    –client-key=${instance}-key.pem <br />
+    –embed-certs=true <br />
+    –kubeconfig=${instance}.kubeconfig</p>
+
+  <p>kubectl config set-context default <br />
+    –cluster=kubernetes-the-hard-way <br />
+    –user=system:node:${instance} <br />
+    –kubeconfig=${instance}.kubeconfig</p>
+
+  <p>kubectl config use-context default –kubeconfig=${instance}.kubeconfig
+done
+Cluster “kubernetes-the-hard-way” set.
+User “system:node:worker-0” set.
+Context “default” created.
+Switched to context “default”.
+Cluster “kubernetes-the-hard-way” set.
+User “system:node:worker-1” set.
+Context “default” created.
+Switched to context “default”.
+Cluster “kubernetes-the-hard-way” set.
+User “system:node:worker-2” set.
+Context “default” created.
+Switched to context “default”.</p>
+</blockquote>
+
+<p>Output</p>
+
+<p>rw——-. 1 root root 6372 Dec 14 20:29 worker-0.kubeconfig
+-rw——-. 1 root root 6376 Dec 14 20:29 worker-1.kubeconfig
+drwxr-xr-x. 1 root root 1486 Dec 14 20:29 .
+-rw——-. 1 root root 6376 Dec 14 20:29 worker-2.kubeconfig</p>
+
+<p>kube-proxy Kubernetes Configuration File</p>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+  <p>kubectl config set-cluster kubernetes-the-hard-way <br />
+    –certificate-authority=ca.pem <br />
+    –embed-certs=true <br />
+    –server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 <br />
+    –kubeconfig=kube-proxy.kubeconfig</p>
+
+  <p>kubectl config set-credentials system:kube-proxy <br />
+    –client-certificate=kube-proxy.pem <br />
+    –client-key=kube-proxy-key.pem <br />
+    –embed-certs=true <br />
+    –kubeconfig=kube-proxy.kubeconfig</p>
+
+  <p>kubectl config set-context default <br />
+    –cluster=kubernetes-the-hard-way <br />
+    –user=system:kube-proxy <br />
+    –kubeconfig=kube-proxy.kubeconfig</p>
+
+  <p>kubectl config use-context default –kubeconfig=kube-proxy.kubeconfig
+}
+Cluster “kubernetes-the-hard-way” set.
+User “system:kube-proxy” set.
+Context “default” created.
+Switched to context “default”.</p>
+</blockquote>
+
+<p>The kube-controller-manager Kubernetes Configuration File</p>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+  <p>kubectl config set-cluster kubernetes-the-hard-way <br />
+    –certificate-authority=ca.pem <br />
+    –embed-certs=true <br />
+    –server=https://127.0.0.1:6443 <br />
+    –kubeconfig=kube-controller-manager.kubeconfig</p>
+
+  <p>kubectl config set-credentials system:kube-controller-manager <br />
+    –client-certificate=kube-controller-manager.pem <br />
+    –client-key=kube-controller-manager-key.pem <br />
+    –embed-certs=true <br />
+    –kubeconfig=kube-controller-manager.kubeconfig</p>
+
+  <p>kubectl config set-context default <br />
+    –cluster=kubernetes-the-hard-way <br />
+    –user=system:kube-controller-manager <br />
+    –kubeconfig=kube-controller-manager.kubeconfig</p>
+
+  <p>kubectl config use-context default –kubeconfig=kube-controller-manager.kubeconfig
+}
+Cluster “kubernetes-the-hard-way” set.
+User “system:kube-controller-manager” set.
+Context “default” created.
+Switched to context “default”.</p>
+</blockquote>
+
+<p>output
+-rw——-. 1 root root 6387 Dec 14 20:32  kube-controller-manager.kubeconfig</p>
+
+<p>The kube-scheduler Kubernetes Configuration File</p>
+
+<p>[root@localhost TLScerts]# {</p>
+<blockquote>
+  <p>kubectl config set-cluster kubernetes-the-hard-way <br />
+    –certificate-authority=ca.pem <br />
+    –embed-certs=true <br />
+    –server=https://127.0.0.1:6443 <br />
+    –kubeconfig=kube-scheduler.kubeconfig</p>
+
+  <p>kubectl config set-credentials system:kube-scheduler <br />
+    –client-certificate=kube-scheduler.pem <br />
+    –client-key=kube-scheduler-key.pem <br />
+    –embed-certs=true <br />
+    –kubeconfig=kube-scheduler.kubeconfig</p>
+
+  <p>kubectl config set-context default <br />
+    –cluster=kubernetes-the-hard-way <br />
+    –user=system:kube-scheduler <br />
+    –kubeconfig=kube-scheduler.kubeconfig</p>
+
+  <p>kubectl config use-context default –kubeconfig=kube-scheduler.kubeconfig
+}
+Cluster “kubernetes-the-hard-way” set.
+User “system:kube-scheduler” set.
+Context “default” created.
+Switched to context “default”.</p>
+</blockquote>
+
+<p>output</p>
+
+<p>drwxr-xr-x. 1 root root 2072 Dec 14 20:33  .
+-rw——-. 1 root root 6337 Dec 14 20:33  kube-scheduler.kubeconfig</p>
+
+<p>The admin Kubernetes Configuration File</p>
+
+<p>[root@localhost TLScerts]#
+[root@localhost TLScerts]# {</p>
+<blockquote>
+  <p>kubectl config set-cluster kubernetes-the-hard-way <br />
+    –certificate-authority=ca.pem <br />
+    –embed-certs=true <br />
+    –server=https://127.0.0.1:6443 <br />
+    –kubeconfig=admin.kubeconfig</p>
+
+  <p>kubectl config set-credentials admin <br />
+    –client-certificate=admin.pem <br />
+    –client-key=admin-key.pem <br />
+    –embed-certs=true <br />
+    –kubeconfig=admin.kubeconfig</p>
+
+  <p>kubectl config set-context default <br />
+    –cluster=kubernetes-the-hard-way <br />
+    –user=admin <br />
+    –kubeconfig=admin.kubeconfig</p>
+
+  <p>kubectl config use-context default –kubeconfig=admin.kubeconfig
+}
+Cluster “kubernetes-the-hard-way” set.
+User “admin” set.
+Context “default” created.
+Switched to context “default”.
+[root@localhost TLScerts]# ls -l admin.kubeconfig
+-rw——-. 1 root root 6265 Dec 14 20:34 admin.kubeconfig</p>
+</blockquote>
+
+<p>Distribute the config</p>
+
+<p>for instance in worker-0 worker-1 worker-2; do
+  lxc file push ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}/root/
+done</p>
+
+<p>[root@localhost TLScerts]# lxc exec worker-2 ls
+ca.pem  kube-proxy.kubeconfig  worker-2-key.pem  worker-2.kubeconfig  worker-2.pem</p>
+
+<p>for instance in controller-0 controller-1 controller-2; do
+  lxc file push admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}/root/
+done</p>
+
+<p>[root@localhost TLScerts]# lxc exec controller-0 ls
+admin.kubeconfig  ca-key.pem  ca.pem  kube-controller-manager.kubeconfig  kube-scheduler.kubeconfig  kubernetes-key.pem  kubernetes.pem  service-account-key.pem  service-account.pem</p>
+
+  </article>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page2">Older</a>
+  
+  
+    <span class="pagination-item newer">Newer</span>
+  
+</div>
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy;
+          <time datetime="2023-03-10T14:30:43+11:00"
+            >2023</time
+          >. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+    
+  </body>
+</html>
